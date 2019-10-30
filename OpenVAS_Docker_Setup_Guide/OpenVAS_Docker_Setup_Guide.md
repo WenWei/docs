@@ -1,7 +1,38 @@
 OpenVAS image for Docker
 ========================
 
-以下關於 mikesplain/openvas 用到的指令請參考 `https://github.com/mikesplain/openvas-docker`
+OpenVAS （Open Vulnerability Assessment System）是一款開源的弱點檢測管理平台，由 Greenbone 所維護，同時也具有商業支援版本，可以依據使用需求選擇。它可以幫助使用者找出目前使用或管理的主機系統是否存在可能被攻擊的系統或程式漏洞，並提供可能的解決方法。
+
+OpenVAS Community 版本功能已經相當齊全：
+
+* 全 Web 網頁化操作
+* 對裝置進行弱點掃描
+* 自動更新漏洞資料庫
+* 可以設置檢測的對象或群組
+* 可將掃描作業設定排程進行
+* 掃描作業歷史記錄
+* 提供漏洞資訊與修補建議
+* 報表產製功能
+* 警報發送機制
+
+
+實際上的 OpenVAS 架構拆分為三個專案，分別是：
+
+* Open Vulnerability Assessment Scanner (OpenVAS)
+ 
+  做為漏洞掃描引擎，提供對網路裝置的漏洞檢測以及漏洞資料庫更新。
+ 
+* Greenbone Vulnerability Manager (GVM)
+
+  做為整個框架的管理中心，管理掃描引擎與檢測結果的資料，以及指令傳遞與作業流程安排。
+ 
+* Greenbone Security Assistant (GSA)
+
+  提供網頁操作介面，它與 GVM 連接，提供使用者全功能的 OpenVAS 功能操作。
+
+
+
+這裡使用 github 上 mikesplain/openvas 的版本。下關於 mikesplain/openvas 用到的指令請參考 `https://github.com/mikesplain/openvas-docker`
 
 ## 從 Docker Hub 下載安裝
 
@@ -17,6 +48,23 @@ docker run -d -p 443:443 -p 9390:9390 --name openvas mikesplain/openvas
 
 ```
 docker run -d -p 443:443 -p 9390:9390 -e PUBLIC_HOSTNAME=example.com --name openvas mikesplain/openvas
+```
+
+
+前述指令的環境變數 `-e PUBLIC_HOSTNAME=example.com` 用來設定外部連線的名稱，如果在區網中沒有 DNS，是透過IP直接連到架設主機服務，則可設定`-e PUBLIC_HOSTNAME=192.168.100.80`，如下圖所示。
+
+```
+       Browser                                          VM 192.168.100.80
+       +----------------------------+                   +-----------------+
+       |http://192.168.100.80:9390  |                   |                 |
+       |                            |                   |      +---------+|
+       |                            +---------------->  x 9390 |         ||
+       |                            |                   |  +   | OpenVAS ||
+       |                            |                   |  |   |         ||
+       |                            |                   |  +-->x 9390    ||
+       |                            |                   |      |         ||
+       |                            |                   |      +---------+|
+       +----------------------------+                   +-----------------+
 ```
 
 ## 更新漏洞資訊
@@ -150,4 +198,6 @@ https://127.0.0.1:443/
 
 [openvas-8-docker](https://github.com/wcollani/openvas-8-docker)
 
-參考：[Docker-based OpenVAS Scanning Cluster to Improve Scope Scalability](https://www.nopsec.com/docker-based-openvas-scanning-cluster-to-improve-scope-scalability/)
+參考：
+* [Docker-based OpenVAS Scanning Cluster to Improve Scope Scalability](https://www.nopsec.com/docker-based-openvas-scanning-cluster-to-improve-scope-scalability/)
+* [弱點掃描工具─OpenVAS 在 CentOS v7安裝介紹](http://www.myhome.net.tw/2015_01/p08.htm)
